@@ -37,6 +37,8 @@ namespace ProjectManagement.Api.Data
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<MemberRole> MemberRoles { get; set; }
         public DbSet<Project> Projects { get; set; }
+        public DbSet<Board> Boards { get; set; }
+        public DbSet<BoardColumn> BoardColumns { get; set; }
         public DbSet<ProjectMember> ProjectMembers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
@@ -649,6 +651,67 @@ modelBuilder.Entity<CustomFieldDefinition>(entity =>
         .WithMany(p => p.CustomFieldDefinitions)
         .HasForeignKey(cfd => cfd.ProjectId)
         .OnDelete(DeleteBehavior.Cascade);
+});
+
+// Configure boards
+modelBuilder.Entity<Board>(entity =>
+{
+    entity.ToTable("boards");
+
+    entity.HasKey(b => b.Id);
+
+    entity.Property(b => b.Id)
+        .HasColumnName("id");
+
+    entity.Property(b => b.ProjectId)
+        .HasColumnName("project_id");
+
+    entity.Property(b => b.Name)
+        .HasColumnName("name");
+
+    entity.Property(b => b.BoardType)
+        .HasColumnName("board_type");
+
+    entity.HasOne(b => b.Project)
+        .WithMany(p => p.Boards)
+        .HasForeignKey(b => b.ProjectId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
+
+// Configure board_columns
+modelBuilder.Entity<BoardColumn>(entity =>
+{
+    entity.ToTable("board_columns");
+
+    entity.HasKey(bc => bc.Id);
+
+    entity.Property(bc => bc.Id)
+        .HasColumnName("id");
+
+    entity.Property(bc => bc.BoardId)
+        .HasColumnName("board_id");
+
+    entity.Property(bc => bc.StatusId)
+        .HasColumnName("status_id");
+
+    entity.Property(bc => bc.Name)
+        .HasColumnName("name");
+
+    entity.Property(bc => bc.SortOrder)
+        .HasColumnName("sort_order");
+
+    entity.Property(bc => bc.WipLimit)
+        .HasColumnName("wip_limit");
+
+    entity.HasOne(bc => bc.Board)
+        .WithMany(b => b.Columns)
+        .HasForeignKey(bc => bc.BoardId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(bc => bc.Status)
+        .WithMany(s => s.BoardColumns)
+        .HasForeignKey(bc => bc.StatusId)
+        .OnDelete(DeleteBehavior.Restrict);
 });
 
 // Configure custom_field_values

@@ -14,4 +14,6 @@ public class TaskStatus
 
     // Navigation properties
     public Project Project { get; set; } = null!;
+
+    public ICollection<BoardColumn> BoardColumns { get; set; } = new List<BoardColumn>();
 }

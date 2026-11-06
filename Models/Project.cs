@@ -34,6 +34,7 @@ public class Project
 
     public User? Owner { get; set; }
 
+    public ICollection<Board> Boards { get; set; } = new List<Board>();
     public ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
     public ICollection<CustomFieldDefinition> CustomFieldDefinitions { get; set; } = new List<CustomFieldDefinition>();
 }
