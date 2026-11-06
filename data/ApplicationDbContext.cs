@@ -30,6 +30,8 @@ namespace ProjectManagement.Api.Data
         public DbSet<OrganizationMember> OrganizationMembers { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<CustomFieldDefinition> CustomFieldDefinitions { get; set; }
+        public DbSet<CustomFieldValue> CustomFieldValues { get; set; }
         public DbSet<SsoConnection> SsoConnections { get; set; }
         public DbSet<ApiKey> ApiKeys { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
@@ -615,6 +617,69 @@ modelBuilder.Entity<ApiKey>(entity =>
         .WithMany(u => u.ApiKeysCreated)
         .HasForeignKey(ak => ak.CreatedById)
         .IsRequired(false);
+});
+
+// Configure custom_field_definitions
+modelBuilder.Entity<CustomFieldDefinition>(entity =>
+{
+    entity.ToTable("custom_field_definitions");
+
+    entity.HasKey(cfd => cfd.Id);
+
+    entity.Property(cfd => cfd.Id)
+        .HasColumnName("id");
+
+    entity.Property(cfd => cfd.ProjectId)
+        .HasColumnName("project_id");
+
+    entity.Property(cfd => cfd.Name)
+        .HasColumnName("name");
+
+    entity.Property(cfd => cfd.FieldType)
+        .HasColumnName("field_type");
+
+    entity.Property(cfd => cfd.Options)
+        .HasColumnName("options")
+        .HasColumnType("jsonb");
+
+    entity.Property(cfd => cfd.IsRequired)
+        .HasColumnName("is_required");
+
+    entity.HasOne(cfd => cfd.Project)
+        .WithMany(p => p.CustomFieldDefinitions)
+        .HasForeignKey(cfd => cfd.ProjectId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
+
+// Configure custom_field_values
+modelBuilder.Entity<CustomFieldValue>(entity =>
+{
+    entity.ToTable("custom_field_values");
+
+    entity.HasKey(cfv => cfv.Id);
+
+    entity.Property(cfv => cfv.Id)
+        .HasColumnName("id");
+
+    entity.Property(cfv => cfv.TaskId)
+        .HasColumnName("task_id");
+
+    entity.Property(cfv => cfv.FieldDefinitionId)
+        .HasColumnName("field_definition_id");
+
+    entity.Property(cfv => cfv.Value)
+        .HasColumnName("value")
+        .HasColumnType("jsonb");
+
+    entity.HasOne(cfv => cfv.Task)
+        .WithMany(t => t.CustomFieldValues)
+        .HasForeignKey(cfv => cfv.TaskId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(cfv => cfv.FieldDefinition)
+        .WithMany(cfd => cfd.CustomFieldValues)
+        .HasForeignKey(cfv => cfv.FieldDefinitionId)
+        .OnDelete(DeleteBehavior.Cascade);
 });
 
 // Configure audit_logs

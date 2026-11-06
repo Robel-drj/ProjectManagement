@@ -51,5 +51,6 @@ public class TaskItem
     public ICollection<TaskDependency> DependenciesWhereThisIsPredecessor { get; set; } = new List<TaskDependency>();
     public ICollection<TaskAssignee> TaskAssignees { get; set; } = new List<TaskAssignee>();
     public ICollection<TaskWatcher> TaskWatchers { get; set; } = new List<TaskWatcher>();
+    public ICollection<CustomFieldValue> CustomFieldValues { get; set; } = new List<CustomFieldValue>();
     public ICollection<TaskDependency> DependenciesWhereThisIsSuccessor { get; set; } = new List<TaskDependency>();
 }
