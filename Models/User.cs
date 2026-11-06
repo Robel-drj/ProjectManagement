@@ -25,4 +25,6 @@ public ICollection<AuditLog> AuditLogsPerformed { get; set; } = new List<AuditLo
     public string? Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
+
+    public ICollection<TaskWatcher> WatchedTasks { get; set; } = new List<TaskWatcher>();
 }

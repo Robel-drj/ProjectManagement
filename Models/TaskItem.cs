@@ -49,6 +49,7 @@ public class TaskItem
 
     public ICollection<TaskLabel> TaskLabels { get; set; } = new List<TaskLabel>();    
     public ICollection<TaskDependency> DependenciesWhereThisIsPredecessor { get; set; } = new List<TaskDependency>();
-
+    public ICollection<TaskAssignee> TaskAssignees { get; set; } = new List<TaskAssignee>();
+    public ICollection<TaskWatcher> TaskWatchers { get; set; } = new List<TaskWatcher>();
     public ICollection<TaskDependency> DependenciesWhereThisIsSuccessor { get; set; } = new List<TaskDependency>();
 }

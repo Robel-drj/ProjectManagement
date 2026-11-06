@@ -24,6 +24,8 @@ namespace ProjectManagement.Api.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Label> Labels { get; set; }
         public DbSet<TaskLabel> TaskLabels { get; set; }
+        public DbSet<TaskAssignee> TaskAssignees { get; set; }
+        public DbSet<TaskWatcher> TaskWatchers { get; set; }
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationMember> OrganizationMembers { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
@@ -305,6 +307,67 @@ modelBuilder.Entity<ProjectGoal>(entity =>
         .HasForeignKey(pg => pg.ParentId)
         .IsRequired(false);
 });
+
+// Configure task_assignees
+modelBuilder.Entity<TaskAssignee>(entity =>
+{
+    entity.ToTable("task_assignees");
+
+    entity.HasKey(ta => ta.Id);
+
+    entity.Property(ta => ta.Id)
+        .HasColumnName("id");
+
+    entity.Property(ta => ta.TaskId)
+        .HasColumnName("task_id");
+
+    entity.Property(ta => ta.ProjectMemberId)
+        .HasColumnName("project_member_id");
+
+    entity.Property(ta => ta.AssignedAt)
+        .HasColumnName("assigned_at")
+        .HasColumnType("timestamptz");
+
+    // Relationships
+    entity.HasOne(ta => ta.Task)
+        .WithMany(t => t.TaskAssignees)
+        .HasForeignKey(ta => ta.TaskId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(ta => ta.ProjectMember)
+        .WithMany(pm => pm.AssignedTasks)
+        .HasForeignKey(ta => ta.ProjectMemberId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
+
+// Configure task_watchers
+modelBuilder.Entity<TaskWatcher>(entity =>
+{
+    entity.ToTable("task_watchers");
+
+    entity.HasKey(tw => tw.Id);
+
+    entity.Property(tw => tw.Id)
+        .HasColumnName("id");
+
+    entity.Property(tw => tw.TaskId)
+        .HasColumnName("task_id");
+
+    entity.Property(tw => tw.UserId)
+        .HasColumnName("user_id");
+
+    // Relationships
+    entity.HasOne(tw => tw.Task)
+        .WithMany(t => t.TaskWatchers)
+        .HasForeignKey(tw => tw.TaskId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(tw => tw.User)
+        .WithMany(u => u.WatchedTasks)
+        .HasForeignKey(tw => tw.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
+
     // Configure project_phases
 modelBuilder.Entity<ProjectPhase>(entity =>
 {
