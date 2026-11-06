@@ -582,6 +582,172 @@ namespace ProjectManagement.Api.Migrations
                     b.ToTable("sso_connections", (string)null);
                 });
 
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskDependency", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int?>("LagMinutes")
+                        .HasColumnType("integer")
+                        .HasColumnName("lag_minutes");
+
+                    b.Property<Guid>("PredecessorTaskId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("predecessor_task_id");
+
+                    b.Property<Guid>("SuccessorTaskId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("successor_task_id");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PredecessorTaskId");
+
+                    b.HasIndex("SuccessorTaskId");
+
+                    b.ToTable("task_dependencies", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<DateOnly?>("DueDate")
+                        .HasColumnType("date")
+                        .HasColumnName("due_date");
+
+                    b.Property<decimal?>("Estimate")
+                        .HasColumnType("numeric")
+                        .HasColumnName("estimate");
+
+                    b.Property<Guid?>("MilestoneId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("milestone_id");
+
+                    b.Property<Guid?>("ParentTaskId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_task_id");
+
+                    b.Property<Guid?>("PhaseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("phase_id");
+
+                    b.Property<Guid>("PriorityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("priority_id");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<Guid>("ReporterId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("reporter_id");
+
+                    b.Property<string>("SortKey")
+                        .HasColumnType("text")
+                        .HasColumnName("sort_key");
+
+                    b.Property<DateOnly?>("StartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("start_date");
+
+                    b.Property<Guid>("StatusId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("status_id");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text")
+                        .HasColumnName("title");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MilestoneId");
+
+                    b.HasIndex("ParentTaskId");
+
+                    b.HasIndex("PhaseId");
+
+                    b.HasIndex("PriorityId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ReporterId");
+
+                    b.HasIndex("StatusId");
+
+                    b.ToTable("tasks", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskPriority", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("text")
+                        .HasColumnName("color");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("task_priorities", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskStatus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("text")
+                        .HasColumnName("category");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<int?>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("task_statuses", (string)null);
+                });
+
             modelBuilder.Entity("ProjectManagement.Api.Models.Team", b =>
                 {
                     b.Property<Guid>("Id")
@@ -690,6 +856,40 @@ namespace ProjectManagement.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.WorkflowTransition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Conditions")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("conditions");
+
+                    b.Property<Guid>("FromStatusId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("from_status_id");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<Guid>("ToStatusId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("to_status_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromStatusId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ToStatusId");
+
+                    b.ToTable("workflow_transitions", (string)null);
                 });
 
             modelBuilder.Entity("ProjectManagement.Api.Models.ApiKey", b =>
@@ -926,6 +1126,100 @@ namespace ProjectManagement.Api.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskDependency", b =>
+                {
+                    b.HasOne("ProjectManagement.Api.Models.TaskItem", "PredecessorTask")
+                        .WithMany("DependenciesWhereThisIsPredecessor")
+                        .HasForeignKey("PredecessorTaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectManagement.Api.Models.TaskItem", "SuccessorTask")
+                        .WithMany("DependenciesWhereThisIsSuccessor")
+                        .HasForeignKey("SuccessorTaskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PredecessorTask");
+
+                    b.Navigation("SuccessorTask");
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskItem", b =>
+                {
+                    b.HasOne("ProjectManagement.Api.Models.ProjectMilestone", "Milestone")
+                        .WithMany()
+                        .HasForeignKey("MilestoneId");
+
+                    b.HasOne("ProjectManagement.Api.Models.TaskItem", "ParentTask")
+                        .WithMany("SubTasks")
+                        .HasForeignKey("ParentTaskId");
+
+                    b.HasOne("ProjectManagement.Api.Models.ProjectPhase", "Phase")
+                        .WithMany()
+                        .HasForeignKey("PhaseId");
+
+                    b.HasOne("ProjectManagement.Api.Models.TaskPriority", "Priority")
+                        .WithMany()
+                        .HasForeignKey("PriorityId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectManagement.Api.Models.Project", "Project")
+                        .WithMany("Tasks")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectManagement.Api.Models.User", "Reporter")
+                        .WithMany("TasksReported")
+                        .HasForeignKey("ReporterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectManagement.Api.Models.TaskStatus", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Milestone");
+
+                    b.Navigation("ParentTask");
+
+                    b.Navigation("Phase");
+
+                    b.Navigation("Priority");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("Reporter");
+
+                    b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskPriority", b =>
+                {
+                    b.HasOne("ProjectManagement.Api.Models.Project", "Project")
+                        .WithMany("TaskPriorities")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskStatus", b =>
+                {
+                    b.HasOne("ProjectManagement.Api.Models.Project", "Project")
+                        .WithMany("TaskStatuses")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("ProjectManagement.Api.Models.Team", b =>
                 {
                     b.HasOne("ProjectManagement.Api.Models.Organization", "Organization")
@@ -954,6 +1248,33 @@ namespace ProjectManagement.Api.Migrations
                     b.Navigation("Team");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ProjectManagement.Api.Models.WorkflowTransition", b =>
+                {
+                    b.HasOne("ProjectManagement.Api.Models.TaskStatus", "FromStatus")
+                        .WithMany()
+                        .HasForeignKey("FromStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ProjectManagement.Api.Models.Project", "Project")
+                        .WithMany("WorkflowTransitions")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjectManagement.Api.Models.TaskStatus", "ToStatus")
+                        .WithMany()
+                        .HasForeignKey("ToStatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FromStatus");
+
+                    b.Navigation("Project");
+
+                    b.Navigation("ToStatus");
                 });
 
             modelBuilder.Entity("ProjectManagement.Api.Models.Organization", b =>
@@ -994,6 +1315,14 @@ namespace ProjectManagement.Api.Migrations
                     b.Navigation("ProjectMilestones");
 
                     b.Navigation("ProjectPhases");
+
+                    b.Navigation("TaskPriorities");
+
+                    b.Navigation("TaskStatuses");
+
+                    b.Navigation("Tasks");
+
+                    b.Navigation("WorkflowTransitions");
                 });
 
             modelBuilder.Entity("ProjectManagement.Api.Models.ProjectGoal", b =>
@@ -1018,6 +1347,15 @@ namespace ProjectManagement.Api.Migrations
                     b.Navigation("RolePermissions");
                 });
 
+            modelBuilder.Entity("ProjectManagement.Api.Models.TaskItem", b =>
+                {
+                    b.Navigation("DependenciesWhereThisIsPredecessor");
+
+                    b.Navigation("DependenciesWhereThisIsSuccessor");
+
+                    b.Navigation("SubTasks");
+                });
+
             modelBuilder.Entity("ProjectManagement.Api.Models.Team", b =>
                 {
                     b.Navigation("ResourcePermissions");
@@ -1036,6 +1374,8 @@ namespace ProjectManagement.Api.Migrations
                     b.Navigation("ProjectsOwned");
 
                     b.Navigation("ResourcePermissions");
+
+                    b.Navigation("TasksReported");
 
                     b.Navigation("TeamMembers");
                 });

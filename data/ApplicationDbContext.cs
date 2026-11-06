@@ -10,27 +10,30 @@ namespace ProjectManagement.Api.Data
         {
         }
         public DbSet<WorkflowTransition> WorkflowTransitions { get; set; }
-public DbSet<TaskItem> Tasks { get; set; }
+        public DbSet<TaskItem> Tasks { get; set; }
+        public DbSet<TaskDependency> TaskDependencies { get; set; }
         public DbSet<Models.TaskStatus> TaskStatuses { get; set; }
-public DbSet<TaskPriority> TaskPriorities { get; set; }
+        public DbSet<TaskPriority> TaskPriorities { get; set; }
         public DbSet<ProjectGoal> ProjectGoals { get; set; }
         public DbSet<ProjectPhase> ProjectPhases { get; set; }
-public DbSet<ProjectMilestone> ProjectMilestones { get; set; }
-public DbSet<ProjectDeliverable> ProjectDeliverables { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
-public DbSet<RolePermission> RolePermissions { get; set; }
-public DbSet<ResourcePermission> ResourcePermissions { get; set; }
+        public DbSet<ProjectMilestone> ProjectMilestones { get; set; }
+        public DbSet<ProjectDeliverable> ProjectDeliverables { get; set; }
+                public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<ResourcePermission> ResourcePermissions { get; set; }
         public DbSet<User> Users { get; set; }
-    public DbSet<Organization> Organizations { get; set; }
-    public DbSet<OrganizationMember> OrganizationMembers { get; set; }
-    public DbSet<TeamMember> TeamMembers { get; set; }
-    public DbSet<Role> Roles { get; set; }
-public DbSet<SsoConnection> SsoConnections { get; set; }
-public DbSet<ApiKey> ApiKeys { get; set; }
-public DbSet<AuditLog> AuditLogs { get; set; }
-public DbSet<MemberRole> MemberRoles { get; set; }
-public DbSet<Project> Projects { get; set; }
-public DbSet<ProjectMember> ProjectMembers { get; set; }
+        public DbSet<Label> Labels { get; set; }
+        public DbSet<TaskLabel> TaskLabels { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<OrganizationMember> OrganizationMembers { get; set; }
+        public DbSet<TeamMember> TeamMembers { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<SsoConnection> SsoConnections { get; set; }
+        public DbSet<ApiKey> ApiKeys { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<MemberRole> MemberRoles { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectMember> ProjectMembers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     // Configure workflow_transitions
@@ -182,6 +185,59 @@ modelBuilder.Entity<Models.TaskStatus>(entity =>
         .WithMany(p => p.TaskStatuses)
         .HasForeignKey(ts => ts.ProjectId);
 });
+
+// Configure labels
+modelBuilder.Entity<Label>(entity =>
+{
+    entity.ToTable("labels");
+
+    entity.HasKey(l => l.Id);
+
+    entity.Property(l => l.Id)
+        .HasColumnName("id");
+
+    entity.Property(l => l.ProjectId)
+        .HasColumnName("project_id");
+
+    entity.Property(l => l.Name)
+        .HasColumnName("name");
+
+    entity.Property(l => l.Color)
+        .HasColumnName("color");
+
+    entity.HasOne(l => l.Project)
+        .WithMany(p => p.Labels)
+        .HasForeignKey(l => l.ProjectId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
+
+// Configure task_labels
+modelBuilder.Entity<TaskLabel>(entity =>
+{
+    entity.ToTable("task_labels");
+
+    entity.HasKey(tl => tl.Id);
+
+    entity.Property(tl => tl.Id)
+        .HasColumnName("id");
+
+    entity.Property(tl => tl.TaskId)
+        .HasColumnName("task_id");
+
+    entity.Property(tl => tl.LabelId)
+        .HasColumnName("label_id");
+
+    entity.HasOne(tl => tl.Task)
+        .WithMany(t => t.TaskLabels)
+        .HasForeignKey(tl => tl.TaskId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    entity.HasOne(tl => tl.Label)
+        .WithMany(l => l.TaskLabels)
+        .HasForeignKey(tl => tl.LabelId)
+        .OnDelete(DeleteBehavior.Cascade);
+});
+
 
 // Configure task_priorities
 modelBuilder.Entity<TaskPriority>(entity =>
@@ -741,7 +797,42 @@ modelBuilder.Entity<ResourcePermission>(entity =>
         .WithMany(o => o.Teams)
         .HasForeignKey(t => t.OrganizationId);
 });
-    modelBuilder.Entity<OrganizationMember>(entity =>
+// Configure task_dependencies
+modelBuilder.Entity<TaskDependency>(entity =>
+{
+    entity.ToTable("task_dependencies");
+
+    entity.HasKey(td => td.Id);
+
+    entity.Property(td => td.Id)
+        .HasColumnName("id");
+
+    entity.Property(td => td.PredecessorTaskId)
+        .HasColumnName("predecessor_task_id");
+
+    entity.Property(td => td.SuccessorTaskId)
+        .HasColumnName("successor_task_id");
+
+    entity.Property(td => td.Type)
+        .HasColumnName("type");
+
+    entity.Property(td => td.LagMinutes)
+        .HasColumnName("lag_minutes");
+
+    // Relationships
+    entity.HasOne(td => td.PredecessorTask)
+        .WithMany(t => t.DependenciesWhereThisIsPredecessor)
+        .HasForeignKey(td => td.PredecessorTaskId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    entity.HasOne(td => td.SuccessorTask)
+        .WithMany(t => t.DependenciesWhereThisIsSuccessor)
+        .HasForeignKey(td => td.SuccessorTaskId)
+        .OnDelete(DeleteBehavior.Restrict);
+});
+
+
+ modelBuilder.Entity<OrganizationMember>(entity =>
     {
         entity.ToTable("organization_members");
 

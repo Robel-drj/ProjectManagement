@@ -46,4 +46,9 @@ public class TaskItem
     public TaskPriority Priority { get; set; } = null!;
 
     public User Reporter { get; set; } = null!;
+
+    public ICollection<TaskLabel> TaskLabels { get; set; } = new List<TaskLabel>();    
+    public ICollection<TaskDependency> DependenciesWhereThisIsPredecessor { get; set; } = new List<TaskDependency>();
+
+    public ICollection<TaskDependency> DependenciesWhereThisIsSuccessor { get; set; } = new List<TaskDependency>();
 }

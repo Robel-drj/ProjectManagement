@@ -4,3 +4,6 @@
 *.user
 *.suo
 .env
+
+# MindexAI
+.mindexai/
