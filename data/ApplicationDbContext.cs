@@ -9,6 +9,10 @@ namespace ProjectManagement.Api.Data
             : base(options)
         {
         }
+        public DbSet<WorkflowTransition> WorkflowTransitions { get; set; }
+public DbSet<TaskItem> Tasks { get; set; }
+        public DbSet<Models.TaskStatus> TaskStatuses { get; set; }
+public DbSet<TaskPriority> TaskPriorities { get; set; }
         public DbSet<ProjectGoal> ProjectGoals { get; set; }
         public DbSet<ProjectPhase> ProjectPhases { get; set; }
 public DbSet<ProjectMilestone> ProjectMilestones { get; set; }
@@ -29,6 +33,179 @@ public DbSet<Project> Projects { get; set; }
 public DbSet<ProjectMember> ProjectMembers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
+    // Configure workflow_transitions
+modelBuilder.Entity<WorkflowTransition>(entity =>
+{
+    entity.ToTable("workflow_transitions");
+
+    entity.HasKey(wt => wt.Id);
+
+    entity.Property(wt => wt.Id)
+        .HasColumnName("id");
+
+    entity.Property(wt => wt.ProjectId)
+        .HasColumnName("project_id");
+
+    entity.Property(wt => wt.FromStatusId)
+        .HasColumnName("from_status_id");
+
+    entity.Property(wt => wt.ToStatusId)
+        .HasColumnName("to_status_id");
+
+    entity.Property(wt => wt.Conditions)
+        .HasColumnName("conditions")
+        .HasColumnType("jsonb");
+
+    entity.HasOne(wt => wt.Project)
+        .WithMany(p => p.WorkflowTransitions)
+        .HasForeignKey(wt => wt.ProjectId);
+
+    entity.HasOne(wt => wt.FromStatus)
+        .WithMany()
+        .HasForeignKey(wt => wt.FromStatusId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    entity.HasOne(wt => wt.ToStatus)
+        .WithMany()
+        .HasForeignKey(wt => wt.ToStatusId)
+        .OnDelete(DeleteBehavior.Restrict);
+});
+
+// Configure tasks
+modelBuilder.Entity<TaskItem>(entity =>
+{
+    entity.ToTable("tasks");
+
+    entity.HasKey(t => t.Id);
+
+    entity.Property(t => t.Id)
+        .HasColumnName("id");
+
+    entity.Property(t => t.ProjectId)
+        .HasColumnName("project_id");
+
+    entity.Property(t => t.PhaseId)
+        .HasColumnName("phase_id");
+
+    entity.Property(t => t.MilestoneId)
+        .HasColumnName("milestone_id");
+
+    entity.Property(t => t.ParentTaskId)
+        .HasColumnName("parent_task_id");
+
+    entity.Property(t => t.StatusId)
+        .HasColumnName("status_id");
+
+    entity.Property(t => t.PriorityId)
+        .HasColumnName("priority_id");
+
+    entity.Property(t => t.ReporterId)
+        .HasColumnName("reporter_id");
+
+    entity.Property(t => t.Title)
+        .HasColumnName("title");
+
+    entity.Property(t => t.Description)
+        .HasColumnName("description");
+
+    entity.Property(t => t.StartDate)
+        .HasColumnName("start_date");
+
+    entity.Property(t => t.DueDate)
+        .HasColumnName("due_date");
+
+    entity.Property(t => t.Estimate)
+        .HasColumnName("estimate")
+        .HasColumnType("numeric");
+
+    entity.Property(t => t.SortKey)
+        .HasColumnName("sort_key");
+
+    entity.HasOne(t => t.Project)
+        .WithMany(p => p.Tasks)
+        .HasForeignKey(t => t.ProjectId);
+
+    entity.HasOne(t => t.Phase)
+        .WithMany()
+        .HasForeignKey(t => t.PhaseId)
+        .IsRequired(false);
+
+    entity.HasOne(t => t.Milestone)
+        .WithMany()
+        .HasForeignKey(t => t.MilestoneId)
+        .IsRequired(false);
+
+    // Self-referencing relationship for sub-tasks
+    entity.HasOne(t => t.ParentTask)
+        .WithMany(t => t.SubTasks)
+        .HasForeignKey(t => t.ParentTaskId)
+        .IsRequired(false);
+
+    entity.HasOne(t => t.Status)
+        .WithMany()
+        .HasForeignKey(t => t.StatusId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    entity.HasOne(t => t.Priority)
+        .WithMany()
+        .HasForeignKey(t => t.PriorityId)
+        .OnDelete(DeleteBehavior.Restrict);
+
+    entity.HasOne(t => t.Reporter)
+        .WithMany(u => u.TasksReported)
+        .HasForeignKey(t => t.ReporterId)
+        .OnDelete(DeleteBehavior.Restrict);
+});
+    // Configure task_statuses
+modelBuilder.Entity<Models.TaskStatus>(entity =>
+{
+    entity.ToTable("task_statuses");
+
+    entity.HasKey(ts => ts.Id);
+
+    entity.Property(ts => ts.Id)
+        .HasColumnName("id");
+
+    entity.Property(ts => ts.ProjectId)
+        .HasColumnName("project_id");
+
+    entity.Property(ts => ts.Name)
+        .HasColumnName("name");
+
+    entity.Property(ts => ts.Category)
+        .HasColumnName("category");
+
+    entity.Property(ts => ts.SortOrder)
+        .HasColumnName("sort_order");
+
+    entity.HasOne(ts => ts.Project)
+        .WithMany(p => p.TaskStatuses)
+        .HasForeignKey(ts => ts.ProjectId);
+});
+
+// Configure task_priorities
+modelBuilder.Entity<TaskPriority>(entity =>
+{
+    entity.ToTable("task_priorities");
+
+    entity.HasKey(tp => tp.Id);
+
+    entity.Property(tp => tp.Id)
+        .HasColumnName("id");
+
+    entity.Property(tp => tp.ProjectId)
+        .HasColumnName("project_id");
+
+    entity.Property(tp => tp.Name)
+        .HasColumnName("name");
+
+    entity.Property(tp => tp.Color)
+        .HasColumnName("color");
+
+    entity.HasOne(tp => tp.Project)
+        .WithMany(p => p.TaskPriorities)
+        .HasForeignKey(tp => tp.ProjectId);
+});
     // Configure project_goals
 modelBuilder.Entity<ProjectGoal>(entity =>
 {

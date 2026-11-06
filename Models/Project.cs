@@ -2,6 +2,10 @@ namespace ProjectManagement.Api.Models;
 
 public class Project
 {
+  public ICollection<WorkflowTransition> WorkflowTransitions { get; set; } = new List<WorkflowTransition>();
+public ICollection<TaskItem> Tasks { get; set; } = new List<TaskItem>();
+  public ICollection<TaskStatus> TaskStatuses { get; set; } = new List<TaskStatus>();
+public ICollection<TaskPriority> TaskPriorities { get; set; } = new List<TaskPriority>();
   public ICollection<ProjectPhase> ProjectPhases { get; set; } = new List<ProjectPhase>();
 public ICollection<ProjectMilestone> ProjectMilestones { get; set; } = new List<ProjectMilestone>();
 public ICollection<ProjectDeliverable> ProjectDeliverables { get; set; } = new List<ProjectDeliverable>();

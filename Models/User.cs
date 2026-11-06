@@ -2,6 +2,7 @@ namespace ProjectManagement.Api.Models;
 
 public class User
 {
+    public ICollection<TaskItem> TasksReported { get; set; } = new List<TaskItem>();
     public ICollection<Project> ProjectsOwned { get; set; } = new List<Project>();
 public ICollection<ProjectMember> ProjectMembers { get; set; } = new List<ProjectMember>();
     public ICollection<ApiKey> ApiKeysCreated { get; set; } = new List<ApiKey>();
